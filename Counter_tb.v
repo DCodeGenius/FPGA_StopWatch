@@ -46,13 +46,10 @@ module Counter_tb();
 
         // enable counting
         count_enabled = 1'b1;
-
-        // We want at least 2 digit changes: 00 -> 01 -> 02
-        // 1 second = 1,000,000,000 ns at timescale 1ns/1ns
-
+       
         // Check after 1 second we got 01
         #(1000000000 + sync);
-        sync = sync | 1;                 // keep their "sync trick"
+        sync = sync | 1;                 
         loop_was_skipped = 0;
         correct = correct & (time_reading == 8'h01);
 
@@ -60,7 +57,7 @@ module Counter_tb();
         #(1000000000 + sync);
         correct = correct & (time_reading == 8'h02);
 
-        // Optional small pause test (doesn't hurt)
+        // Optional small pause test
         count_enabled = 1'b0;
         #200;
         correct = correct & (time_reading == 8'h02);
