@@ -1,30 +1,30 @@
-`timescale 1 ns / 1 ns
-//////////////////////////////////////////////////////////////////////////////////
-// Company:         Tel Aviv University
-// Module Name:     Counter_tb
-// Description:     test bench for Counter module
-//////////////////////////////////////////////////////////////////////////////////
-module Counter_tb();
+//`timescale 1 ns / 1 ns
+////////////////////////////////////////////////////////////////////////////////////
+//// Company:         Tel Aviv University
+//// Module Name:     Counter_tb
+//// Description:     test bench for Counter module
+////////////////////////////////////////////////////////////////////////////////////
+//module Counter_tb();
 
-    reg  clk, init_regs, count_enabled, correct, loop_was_skipped;
-    wire [7:0] time_reading;
-    wire [3:0] tens_seconds_wire;
-    wire [3:0] ones_seconds_wire;
+//    reg  clk, init_regs, count_enabled, correct, loop_was_skipped;
+//    wire [7:0] time_reading;
+//    wire [3:0] tens_seconds_wire;
+//    wire [3:0] ones_seconds_wire;
 
-    integer ts, os;
-    integer sync;
+//    integer ts, os;
+//    integer sync;
 
-    // Instantiate the UUT (Unit Under Test)
-    // 100MHz clock => CLK_FREQ must be 100,000,000
-    Counter #(.CLK_FREQ(100000000)) uut (
-        .clk          (clk),
-        .init_regs    (init_regs),
-        .count_enabled(count_enabled),
-        .time_reading (time_reading)
-    );
+//    // Instantiate the UUT (Unit Under Test)
+//    // 100MHz clock => CLK_FREQ must be 100,000,000
+//    Counter #(.CLK_FREQ(100000000)) uut (
+//        .clk          (clk),
+//        .init_regs    (init_regs),
+//        .count_enabled(count_enabled),
+//        .time_reading (time_reading)
+//    );
 
-    assign tens_seconds_wire = time_reading[7:4];
-    assign ones_seconds_wire = time_reading[3:0];
+//    assign tens_seconds_wire = time_reading[7:4];
+//    assign ones_seconds_wire = time_reading[3:0];
 
 //    // 100MHz clock: 10ns period
 //    always #5 clk = ~clk;
