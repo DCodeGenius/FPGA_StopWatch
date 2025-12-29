@@ -1,133 +1,163 @@
-`timescale 1ns/10ps
+`timescale 1 ns / 1 ns
+//////////////////////////////////////////////////////////////////////////////////
+// Company:         Tel Aviv University
+// Module Name:     Counter_tb
+// Description:     test bench for Counter module
+//////////////////////////////////////////////////////////////////////////////////
+module Counter_tb();
+
+    reg  clk, init_regs, count_enabled, correct, loop_was_skipped;
+    wire [7:0] time_reading;
+    wire [3:0] tens_seconds_wire;
+    wire [3:0] ones_seconds_wire;
+
+    integer ts, os;
+    integer sync;
+
+    // Instantiate the UUT (Unit Under Test)
+    // 100MHz clock => CLK_FREQ must be 100,000,000
+    Counter #(.CLK_FREQ(100000000)) uut (
+        .clk          (clk),
+        .init_regs    (init_regs),
+        .count_enabled(count_enabled),
+        .time_reading (time_reading)
+    );
+
+    assign tens_seconds_wire = time_reading[7:4];
+    assign ones_seconds_wire = time_reading[3:0];
+
+//    // 100MHz clock: 10ns period
+//    always #5 clk = ~clk;
+
+//    initial begin
+//        #1;
+//        sync = 0;
+//        correct = 1;
+//        loop_was_skipped = 1;
+
+//        // init
+//        clk = 1'b0;
+//        init_regs = 1'b1;
+//        count_enabled = 1'b0;
+
+//        // hold init for a couple cycles
+//        #50;
+//        init_regs = 1'b0;
+
+//        // enable counting
+//        count_enabled = 1'b1;
+
+//        // We want at least 2 digit changes: 00 -> 01 -> 02
+//        // 1 second = 1,000,000,000 ns at timescale 1ns/1ns
+
+//        // Check after 1 second we got 01
+//        #(1000000000 + sync);
+//        sync = sync | 1;                 // keep their "sync trick"
+//        loop_was_skipped = 0;
+//        correct = correct & (time_reading == 8'h01);
+
+//        // Check after another 1 second we got 02
+//        #(1000000000 + sync);
+//        correct = correct & (time_reading == 8'h02);
+
+//        // Optional small pause test (doesn't hurt)
+//        count_enabled = 1'b0;
+//        #200;
+//        correct = correct & (time_reading == 8'h02);
+//        count_enabled = 1'b1;
+
+//        #5;
+//        if (correct && ~loop_was_skipped)
+//            $display("Test Passed - %m");
+//        else
+//            $display("Test Failed - %m");
+
+//        $finish;
+//    end
+
+//endmodule
+
+
+`timescale 1 ns / 1 ns
 //////////////////////////////////////////////////////////////////////////////////
 // Company:         Tel Aviv University
 // Engineer:        
 // 
-// Create Date:     05/05/2019 02:59:38 AM
+// Create Date:     00:00:00  AM 05/05/2019 
 // Design Name:     EE3 lab1
-// Module Name:     Ctl_tb
+// Module Name:     Counter_tb
 // Project Name:    Electrical Lab 3, FPGA Experiment #1
 // Target Devices:  Xilinx BASYS3 Board, FPGA model XC7A35T-lcpg236C
 // Tool versions:   Vivado 2016.4
-// Description:     test bennch for the control.
-// Dependencies:    None
+// Description:     test bench for Counter module
+// Dependencies:    Counter
 //
-// Revision: 		3.0
+// Revision:        3.0
+// Revision:        3.1 - changed  9999999 to 99999999 for a proper, 1sec delay, 
+//                        in the inner test loop.
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module Ctl_tb();
+module Counter_tb();
 
-    reg clk, reset, trig, split, correct, loop_was_skipped;
-    wire init_regs, count_enabled;
-    //integer ai,cii;
+    reg clk, init_regs, count_enabled, correct, loop_was_skipped;
+    wire [7:0] time_reading;
+    wire [3:0] tens_seconds_wire;
+    wire [3:0] ones_seconds_wire;
+    integer ts, os, sync;
     
     // Instantiate the UUT (Unit Under Test)
-    Ctl uut (
-        .clk(clk),
-        .reset(reset),
-        .trig(trig),
-        .split(split),
-        .init_regs(init_regs),
-        .count_enabled(count_enabled)
+    // TODO
+    Counter uut (
+        .clk          (clk),
+        .init_regs    (init_regs),
+        .count_enabled(count_enabled),
+        .time_reading (time_reading)
     );
-        // small helper: sample a bit after posedge so signals settle
-//    task check; //TODO check if needed, delete if not
-//        input exp_init;
-//        input exp_count;
-//        begin
-//            #1; // allow propagation
-//            correct = correct & (init_regs === exp_init) & (count_enabled === exp_count);
-//        end
-//    endtask
     
-      // pulse helpers: make sure pulse is seen on a posedge
-//    task pulse_trig;
-//        begin
-//            @(negedge clk);
-//            trig = 1'b1;
-//            @(negedge clk);
-//            trig = 1'b0;
-//        end
-//    endtask
+    assign tens_seconds_wire = time_reading[7:4];
+    assign ones_seconds_wire = time_reading[3:0];
+    
+    initial begin 
+        #1;
+        sync = 0;
 
-//    task pulse_split;
-//        begin
-//            @(negedge clk);
-//            split = 1'b1;
-//            @(negedge clk);
-//            split = 1'b0;
-//        end
-//    endtask
-      
-    initial begin
+        // NOTE: these two signals were in your paste but are NOT declared in the skeleton.
+        // If you keep them, compilation fails. So we remove them.
+        // count_sample = 0;
+        // show_sample  = 0;
+
         correct = 1;
-        clk = 0; 
-        reset = 1; 
-        trig = 0;
-        split = 0;
-        #10
-        reset = 0; 
-        correct = correct & init_regs & ~count_enabled;
-        #20
+        loop_was_skipped = 1;
+        clk = 1;
+        init_regs = 1;
+        count_enabled = 0;
+
+        #20;
+        init_regs = 0;
+        count_enabled = 1;        
         
-        // FILL HERE - TEST VARIOUS STATE TRANSITION 
-        // IDLE -> COUNTING (pulse trig)
-        @(negedge clk); trig = 1;
-        @(negedge clk); trig = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & count_enabled;
+        // Remember that every 1000000 clocks are 10 milliseconds
+        for (ts = 0; ts < 1; ts = ts + 1) begin // not more than 1*10 seconds check
+            for (os = 0; os < 2; os = os + 1) begin // not more than 2*1 seconds check
 
-        // COUNTING stays COUNTING if split (per your current FSM)
-        @(negedge clk); split = 1;
-        @(negedge clk); split = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & count_enabled;
+                #(99999999 + sync);
 
-        // COUNTING -> PAUSED (pulse trig)
-        @(negedge clk); trig = 1;
-        @(negedge clk); trig = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & ~count_enabled;
+                // FILL HERE THE "correct" signal MAINTENANCE
+                // Expect: after os seconds, the stopwatch should show 00,01,02,...
+                // (tens stays 0 in this short test)
+                correct = correct &
+                          (tens_seconds_wire == ts[3:0]) &
+                          (ones_seconds_wire == os[3:0]);
 
-        // PAUSED -> COUNTING (pulse trig)
-        @(negedge clk); trig = 1;
-        @(negedge clk); trig = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & count_enabled;
+                sync = sync | 1;
+                loop_was_skipped = 0;
 
-        // COUNTING -> PAUSED again (pulse trig)
-        @(negedge clk); trig = 1;
-        @(negedge clk); trig = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & ~count_enabled;
-
-        // PAUSED -> IDLE (pulse split)
-        @(negedge clk); split = 1;
-        @(negedge clk); split = 0;
-        @(posedge clk); #1;
-        correct = correct & init_regs & ~count_enabled;
-
-        // Reset from COUNTING: go to IDLE
-        // First go IDLE -> COUNTING
-        @(negedge clk); trig = 1;
-        @(negedge clk); trig = 0;
-        @(posedge clk); #1;
-        correct = correct & ~init_regs & count_enabled;
-
-        // Now assert reset
-        @(negedge clk); reset = 1;
-        @(posedge clk); #1;
-        correct = correct & init_regs & ~count_enabled;
-
-        // release reset, should still be IDLE
-        @(negedge clk); reset = 0;
-        @(posedge clk); #1;
-        correct = correct & init_regs & ~count_enabled;
-        #10        
+            end
+        end
         
-          
-        if (correct)
+        #5;
+        if (correct && ~loop_was_skipped)
             $display("Test Passed - %m");
         else
             $display("Test Failed - %m");
@@ -135,5 +165,5 @@ module Ctl_tb();
     end
     
     always #5 clk = ~clk;
-    
+
 endmodule
